@@ -2,6 +2,7 @@
 
 namespace Titonova\XLivewire;
 
+use Illuminate\Support\Facades\Blade;
 use Spatie\LaravelPackageTools\Package;
 use Titonova\XLivewire\Components\Livewire;
 use Titonova\XLivewire\Commands\XLivewireCommand;
@@ -25,5 +26,26 @@ class XLivewireServiceProvider extends PackageServiceProvider
             ->hasCommand(XLivewireCommand::class);
     }
 
+
+    public function bootingPackage()
+    {
+        Blade::directive('setUpXLivewire', function ($expression) {
+            return '<?php
+            $slot =   $this->slot() ;
+            $attributes = $this->attributes() ?? [];
+            /**
+             * Loop through all the attributes passed in the livewire tag
+             * and make them variables and class properties to be used in the
+             * view and livewire component.
+             */
+            foreach($attributes as $key=>$value){
+               if(\Titonova\XLivewire\XLivewire::propertyIsPublic($key,$this)){
+                    $this->$key= $$key = $value;
+                }
+                unset($key, $value);
+            }
+            ?>';
+        });
+    }
 
 }
