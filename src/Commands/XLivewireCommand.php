@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Titonova\XLivewire\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class XLivewireCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'x-livewire';
 
     public $description = 'My command';
 
