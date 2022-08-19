@@ -22,7 +22,7 @@ class XLivewireServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasViewComponents('',Livewire::class)
-            ->hasMigration('create_x-livewire_table')
+            //->hasMigration('create_x-livewire_table')
             ->hasCommand(XLivewireCommand::class);
     }
 
@@ -31,18 +31,40 @@ class XLivewireServiceProvider extends PackageServiceProvider
     {
         Blade::directive('setUpXLivewire', function ($expression) {
             return '<?php
-            $slot =   $this->slot() ;
-            $attributes = $this->attributes() ?? [];
+
+            $attributes = $this->attributes();
+
             /**
-             * Loop through all the attributes passed in the livewire tag
-             * and make them variables and class properties to be used in the
-             * view and livewire component.
+             *  This is9would be) an array of all attributes that were set in the x-livewire tag
+             *  But were not declared in the component class.
+             *
              */
-            foreach($attributes as $key=>$value){
-               if(\Titonova\XLivewire\XLivewire::propertyIsPublic($key,$this)){
-                    $this->$key= $$key = $value;
-                }
-                unset($key, $value);
+
+            $this->tagAttributes = [];
+
+            if($attributes instanceof \Illuminate\View\ComponentAttributeBag){
+                $slot =   $this->slot()->toHtml() ;
+
+             /**
+                 * Loop through all the attributes passed in the livewire tag
+                 * and make them variables and class properties to be used in the
+                 * view and livewire component.
+                 */
+
+                    foreach($attributes as $key=>$value){
+                        if(\Titonova\XLivewire\XLivewire::propertyIsPublic($key,$this)){
+                                $this->$key= $$key = $value;
+                        }
+
+                        /**
+                         *  Get all the attributes that were written but arent meant to be properties.
+                         */
+                        $camelKey = Str::camel($key);
+                        if(!(\Titonova\XLivewire\XLivewire::propertyIsPublic($camelKey,$this)) && $key !=="_"){
+                            $this->tagAttributes[$key]=$value;
+                        }
+                        unset($key, $value);
+                    }
             }
             ?>';
         });

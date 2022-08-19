@@ -40,18 +40,25 @@ You can install the package via composer:
 
 1. After creating your livewire component, make it extend `XLivewireBaseComponent` rather than `Component`.
 ie: `class Alert extends XLivewireBaseComponent{`
-2. In the view file of the component, e.g `alert.blade.php` add `@setUpXLivewire` to the top of the file.
-3. When you want to render the component:
+2. If you want to access the `$attributes` bag in your x-livewire component's backend, add `$this->setProps()` as the first line in your component's `mount()` method.
+3. In the view file of the component, e.g `alert.blade.php` add `@setUpXLivewire` to the top of the file.
+4. When you want to render the component:
         ```Blade
         <x-livewire _="alert" title="Warning">
             My alert message
         </x-livewire>
         ```
-4.  You can access the `$slot` and `$attributes` variables just like you would in a Blade component:
+5.  You can access the `$slot` and `$attributes` variables just like you would in a Blade component:
     ```
     {{ $slot }}
     {{ $attributes->get('title') }}
     ```
+6. You can also access the array of attributes that were passed to the x-livewire's component's tag but were not explicitedly declared in the class as 
+`$tagAttributes` property. 
+    ```
+    {{ $tagAttributes->get('href') }}
+    ```
+For example, attributes like `primary`, `lg` etc that don't need corresponding properties in the class..
 ## Testing
 
 ```bash
@@ -64,6 +71,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## TODO/Roadmap
 [ ] Add Tests
+
 [ ] Shorten tag declartion to `<x-livewire:alert>`
 
 ## Contributing
