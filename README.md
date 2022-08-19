@@ -1,6 +1,9 @@
 
 [<img src="https://github-ads.s3.eu-central-1.amazonaws.com/support-ukraine.svg?t=1" />](https://supportukrainenow.org)
 
+> ⚠️ Still in beta phase. Do not use in production environments yet. 
+> Contributions are highly welcomed
+
 # X-livewire
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/titonova/x-livewire.svg?style=flat-square)](https://packagist.org/packages/titonova/x-livewire)
