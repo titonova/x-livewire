@@ -8,8 +8,18 @@ use Illuminate\Support\Str;
 class XLivewireBaseComponent extends Component
 {
 
-    public $slot;
-    public $attributes;
+    public string $slot;
+    public string $attributes;
+
+
+    /**
+     * The serialized array of custom slots passed to the component.
+     * Basically, x-livewire's version of the default Blade $__laravel_slot variable.
+     *
+     *
+     * @var string
+     */
+    public string $laravelSlots;
 
     public function slot()
     {
@@ -21,12 +31,47 @@ class XLivewireBaseComponent extends Component
         return unserialize($this->attributes);
     }
 
-    public function setProps()
+    public function laravelSlots()
     {
-        // We name it this way to avoid conflicts with the component's own $attributes property.
+        return unserialize($this->laravelSlots);
+    }
+
+
+    public function mount(){
+        $this->setProps();
+    }
+
+    /**
+     * Set the component's class properties from the attributes passed into it's x-livewire tag.
+     *
+     * What this method does is loop through all it's public properties and set them to the values given in the tag.
+     * If the property is not public, it is added to the $tagAttributes array.
+     *
+     * E.g: Let's say  we have an x-livewire tag as follows:
+     * <x-livewire: _="my-component" :my-attribute="my-value" another-attribute="foofoo" my-tag-attribute="dont-add-me" />
+     * And its component class is defined as follows:
+     * class MyComponent extends XLivewireBaseComponent{... public $myAttribute; public $anotherAttribute; ...}
+     *
+     * In this case, the component will have the following properties set:
+     * $this->myAttribute = "my-value"
+     * $this->anotherAttribute = "foofoo"
+     *
+     * There won't be any properties set for the `my-tag-attribute`, as there was no public property with that name($myTagAttribute).
+     * It would have been added to the $tagAttributes array instead.
+     * To access it, you would use the following code:
+     * $this->tagAttributes["my-tag-attribute"]
+     *
+     * This method should be the first method called in the component's `mount()` method.
+     *
+     * @return void
+     */
+    public function setProps(): void
+    {
+        // The collection of all attributes that were set in the x-livewire tag.
+        // We name it this way to avoid conflicts with the component's actual  $attributes property.
         $this->attributesCollection =  collect($this->attributes());
 
-        // Get a collection  the names of all the public properties.
+        // Get a collection of the names of all the public properties.
         $r_object = new \ReflectionObject($this);
         $public_props = collect($r_object->getProperties(\ReflectionProperty::IS_PUBLIC))->transform(fn($prop) => $prop->name);
 
@@ -47,10 +92,10 @@ class XLivewireBaseComponent extends Component
                 // This is the name of the property component's backend
                 $prop_livewire_name =  Str::snake($prop,'-');
 
-                // Check if the property was explicitely set in the $attributes array.
+                // Check if the property was explicitely set in the $attributes array....
                 if($this->attributesCollection->has($prop_livewire_name)){
 
-                    // If it was explicitely set, set the property to the value from the $attributes array.
+                    // ...If the property was explicitely set, set the property to the value from the $attributes array.
                     $this->$prop =  $this->attributesCollection->get($prop_livewire_name);
                 }
             }

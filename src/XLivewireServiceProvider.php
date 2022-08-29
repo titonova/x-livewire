@@ -35,8 +35,10 @@ class XLivewireServiceProvider extends PackageServiceProvider
             $attributes = $this->attributes();
 
             /**
-             *  This is9would be) an array of all attributes that were set in the x-livewire tag
+             *  This is would be an array of all attributes that were set in the x-livewire tag
              *  But were not declared in the component class.
+             *
+             *
              *
              */
 
@@ -45,7 +47,7 @@ class XLivewireServiceProvider extends PackageServiceProvider
             if($attributes instanceof \Illuminate\View\ComponentAttributeBag){
                 $slot =   $this->slot()->toHtml() ;
 
-             /**
+                /**
                  * Loop through all the attributes passed in the livewire tag
                  * and make them variables and class properties to be used in the
                  * view and livewire component.
@@ -65,6 +67,39 @@ class XLivewireServiceProvider extends PackageServiceProvider
                         }
                         unset($key, $value);
                     }
+                /**
+                 *  Extract the (named) slot values from the $__laravel_slot variable.
+                 *  Thus allowing access to custom, named slots in the view.
+                 *
+                 *  That is, Loop through all the slots in the $laraveSlots array and set the property name to the
+                 *  camel case version of the slot name and the value to the slot value.
+                 *
+                 *  If the slot value is an empty string, it will be set to null so that null checks
+                 *
+                 *
+                 */
+                foreach ($this->laravelSlots() as $slot_name => $slot_value) {
+                    if($slot_name !=="__default"){
+                        ${Str::camel($slot_name)} = $slot_value->toHtml() == "" ? null : $slot_value->toHtml();
+                    }
+
+
+                }
+
+
+
+                /**
+                 * Allow $tagAttributes to be accessed from the view.
+                 * e.g {{ $tagAttributes["my-tag-attribute"] }}
+                 */
+
+                $tagAttributes = $this->tagAttributes;
+
+                /**
+                 * Clean up unneccessary variables that were set
+                 */
+                unset($slot_name, $slot_value, $camelKey);
+
             }
             ?>';
         });

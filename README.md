@@ -51,17 +51,66 @@ ie: `class Alert extends XLivewireBaseComponent{`
             My alert message
         </x-livewire>
         ```
-5.  You can access the `$slot` and `$attributes` variables just like you would in a Blade component:
+-------------------------------------------------------------------------------------
+You can access the `$slot` and `$attributes` variables just like you would in a Blade component:
     ```
     {{ $slot }}
     {{ $attributes->get('title') }}
     ```
-6. You can also access the array of attributes that were passed to the x-livewire's component's tag but were not explicitedly declared in the class as 
+
+
+You can also access the array of attributes that were passed to the x-livewire's component's tag but were not explicitedly declared in the class as 
 `$tagAttributes` property. 
     ```
     {{ $tagAttributes->get('href') }}
     ```
-For example, attributes like `primary`, `lg` etc that don't need corresponding properties in the class..
+    For example, attributes like `primary`, `lg` etc that don't need corresponding properties declarations in the class.
+    E.g
+    ```HTML
+        <x-livewire _="link" href="https://google.com" primary>Google </x-livewire>
+        ....
+
+        <span>
+        <a href="{{ $tagAttributes->get('href') }}>{{ $slot }}</a>
+        </span>
+    ```
+
+
+You can add and access named slots as such:
+```        <x-livewire _="alert" title="Warning">
+            My alert message
+            <x-slot name="footer">My custom footer </x-slot>
+        </x-livewire>
+        
+        ....
+
+        <div class="alert ...">
+            {{ $slot }}
+            <div class="alert-footer">
+                {{ $footer ?? 'Default footer content' }}
+            </div>
+        </div>
+```
+
+If you want to access the slots directly as their ` Illuminate\View\ComponentSlot ` class, you can use the following:
+ `$this->laravelSlots()['footer']`.
+Which would return an instance of `Illuminate\View\ComponentSlot`.
+E.g:
+``` "footer" => Illuminate\View\ComponentSlot {#1385 ▼
+    +attributes: Illuminate\View\ComponentAttributeBag {#1379 ▼
+      #attributes: []
+    }
+    #contents: "<b>&lt;i&gt;hello!!!    &lt;/i&gt; </b>"
+```
+With available methods such as
+
+```public __construct($contents = '', $attributes = array()): void Create a new slot instance.
+public withAttributes(array $attributes): $this Set the extra attributes that the slot should make available.
+public toHtml(): string Get the slot's HTML string.
+public isEmpty(): bool Determine if the slot is empty.
+public isNotEmpty(): bool Determine if the slot is not empty.
+public __toString(): string Get the slot's HTML string.
+```
 ## Testing
 
 ```bash
@@ -76,8 +125,6 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 [ ] Add Tests
 
 [ ] Shorten tag declartion to `<x-livewire:alert>`
-
-[ ] Allow custom slots
 
 ## Contributing
 
