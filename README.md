@@ -77,6 +77,8 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 [ ] Shorten tag declartion to `<x-livewire:alert>`
 
+[ ] Allow custom slots
+
 ## Contributing
 
 Please see [CONTRIBUTING](https://github.com/titonova/.github/blob/main/CONTRIBUTING.md) for details.
