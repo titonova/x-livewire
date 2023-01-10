@@ -136,7 +136,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [Tito Amoo](https://github.com/titonova)
+- [Tito](https://github.com/titonova)
 - [All Contributors](../../contributors)
 
 ## License
