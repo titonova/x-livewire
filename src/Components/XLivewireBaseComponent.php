@@ -9,7 +9,10 @@ class XLivewireBaseComponent extends Component
 {
 
     public string $slot;
-    public string $attributes;
+    protected string $_slot = '';
+
+    public string $_attributes;
+    protected string $__attributes = '';
 
 
     /**
@@ -20,20 +23,21 @@ class XLivewireBaseComponent extends Component
      * @var string
      */
     public string $laravelSlots;
+    protected string $_laravelSlots = '';
 
     public function slot()
     {
-        return unserialize($this->slot);
+        return unserialize($this->_slot);
     }
 
     public function attributes()
     {
-        return unserialize($this->attributes);
+        return unserialize($this->__attributes);
     }
 
     public function laravelSlots()
     {
-        return unserialize($this->laravelSlots);
+        return unserialize($this->_laravelSlots);
     }
 
 
@@ -67,9 +71,15 @@ class XLivewireBaseComponent extends Component
      */
     public function setProps(): void
     {
+        $this->__attributes = $this->_attributes;
+        $this->_slot = $this->slot;
+        $this->_laravelSlots = $this->laravelSlots;
+
+        $attributes = $this->attributes();//->getAttributes();
+
         // The collection of all attributes that were set in the x-livewire tag.
         // We name it this way to avoid conflicts with the component's actual  $attributes property.
-        $this->attributesCollection =  collect($this->attributes());
+        $this->attributesCollection =  collect($attributes);
 
         // Get a collection of the names of all the public properties.
         $r_object = new \ReflectionObject($this);
@@ -100,6 +110,9 @@ class XLivewireBaseComponent extends Component
                 }
             }
         }
+
+        // To hide all these properties from the frontend, we unset them.
+        unset($this->_attributes, $this->laravelSlots, $this->slot);
 
 
     }

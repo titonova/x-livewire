@@ -3,7 +3,7 @@
               :component="$attributes->get('_')"
               :slot="serialize($slot)"
               :laravel-slots="serialize($__laravel_slots)"
-              :attributes="serialize($attributes)"
+              :_attributes="serialize($attributes)"
     />
 
 
